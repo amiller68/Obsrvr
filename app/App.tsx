@@ -1,11 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-
+import Constants from 'expo-constants';
 
 // A domain name we get through localtunnel
-export const server_address = "https://weak-bulldog-58.loca.lt/";
-// export const server_address = "https://192.168.1.159:3000";
+// @ts-ignore
+//export const server_address = Constants.manifest.extra.serverUri;
+export const server_address = "https://obsrvr.loca.lt/"
 
 export default function App() {
 
