@@ -1,48 +1,63 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Constants from 'expo-constants';
+import * as pages from './pages/pages'
+import * as server from "./server_comm";
 
-// A domain name we get through localtunnel
-// @ts-ignore
-//export const server_address = Constants.manifest.extra.serverUri;
-export const server_address = "https://obsrvr.loca.lt/"
+// export class App extends React.Component {
+//   render() {
+//       return (
+//           console.log("hmmm");
+//           pages.test()
+//       );
+//   }
+// }
+
+export function test() {
+    return(
+        <View style={styles.container}>
+            <Text>TESTETESTTESTSETTEST</Text>
+            <TouchableOpacity
+                onPress={
+                    () => {
+                        console.log("testarooni");
+                        server.test_request();
+                    }
+                }
+            >
+                <Text>
+                    TESTBUTTON
+                </Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
 
 export default function App() {
-
-  async function test_request() {
-    try {
-      console.log("testing: ", server_address)
-      let response = await fetch( server_address);
-      console.log("TestID5")
-      console.log(JSON.stringify(response));
-    } catch (err) {
-      console.log(err);
-    }
-  }
-  return (
-      <View style={styles.container}>
-        <Text>TESTETESTTESTSETTEST</Text>
-        <TouchableOpacity
-            onPress={
-              () => {
-                console.log("testarooni");
-                test_request();
-              }
-            }
-        >
-          <Text>
-            TESTBUTTON
-          </Text>
-        </TouchableOpacity>
-      </View>
-  );
+    console.log("hmm")
+    return (
+        <View style={styles.container}>
+            <Text>TESTETESTTESTSETTEST</Text>
+            <TouchableOpacity
+                onPress={
+                    () => {
+                        console.log("testarooni");
+                        server.test_request();
+                    }
+                }
+            >
+                <Text>
+                    TESTBUTTON
+                </Text>
+            </TouchableOpacity>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 });
