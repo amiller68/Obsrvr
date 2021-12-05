@@ -1,4 +1,4 @@
-const server_address = "https://obsrvr.loca.lt/"
+const server_address = "https://bitter-cat-49.loca.lt/"
 
 export const ERROR_PAGE_ID = 'error'
 
@@ -13,24 +13,31 @@ export async function test_request() {
     }
 }
 
-export async function server_request(page_name: string, data: Object): Promise<string> {
+export async function server_request(page_name: string, data: any): Promise<string> {
     try {
+
         console.log("Submitting Request From: ", page_name)
-        console.log("Collected: ", data)
+        console.log("Collected data: ", data)
 
         // Try making a request
-        let response = await fetch(server_address, {
+        let next_page = 'error'
+        await fetch(server_address, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
-        });
-        const response_data = response.json()
-        console.log(JSON.stringify(response));
-        return 'welcome'
-
+            body: JSON.stringify({
+                page_name: page_name,
+                data: data
+            })
+        }).then(
+            (response) =>
+                response.json()
+        ).then((responseData) =>
+            next_page = responseData.next_page
+        );
+        return next_page;
     } catch (err) {
         console.log(err);
         return ERROR_PAGE_ID

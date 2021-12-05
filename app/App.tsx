@@ -23,25 +23,15 @@ class App extends Component<AppProps, AppState> {
         this.onSubmit = this.onSubmit.bind(this)
     }
 
-    onSubmit(page_name: string, data: any) {
-        console.log(data)
+    async onSubmit(page_name: string, data: any) {
+        let new_page = await server_request(page_name, data);
+
         let new_state = {
-            'page': '',
-            'button_string': ''
+            'page': new_page,
+            'button_string': 'Ok'
         } as AppState
 
-        if (page_name == 'init') {
-            new_state['page'] = 'welcome';
-            new_state['button_string'] = 'Submit Form'
-        }
-
-        if (page_name == 'welcome') {
-            new_state['page'] = 'init';
-            new_state['button_string'] = 'Let\'s Begin'
-        }
-
         this.setState(new_state)
-        console.log(this.state)
     }
 
     render() {
