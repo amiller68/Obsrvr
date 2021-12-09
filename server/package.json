@@ -8,5 +8,9 @@
     "start": "node server.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "check-types": "^11.1.2",
+    "deepai": "^1.0.17"
+  }
 }

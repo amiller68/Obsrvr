@@ -1,4 +1,4 @@
-const server_address = "https://obsrvr.loca.lt"
+const server_address = "https://obsrvr.loca.lt/"
 
 export const ERROR_PAGE_ID = 'error'
 

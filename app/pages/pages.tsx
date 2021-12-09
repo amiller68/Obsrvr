@@ -1,6 +1,9 @@
 // Import React Native Pages here...
 import welcome from './js/welcome'
 import init from './js/init'
+import test from './js/test'
+import food from './js/food'
+import social_media from "./js/social_media";
 import error from './js/error'
 
 import * as React from "react";
@@ -12,9 +15,13 @@ export interface pagesDict<TValue> {
     [id: string]: TValue;
 }
 
+//Register pages here
 export const pageRegister = {
     'init': init,
-    'welcome': welcome
+    'welcome': welcome,
+    'test': test,
+    'food': food,
+    'social_media': social_media
 } as pagesDict<(f: any) => JSX.Element>
 
 type RouterProps = {
@@ -30,7 +37,6 @@ type RouterState = {
 class PageRouter extends Component<RouterProps>{
     private pageDict = pageRegister;
 
-    //Register pages here
     constructor(props: RouterProps) {
         super(props);
         this.state = {
@@ -38,6 +44,7 @@ class PageRouter extends Component<RouterProps>{
         } as RouterState;
 
         this.onFormChange = this.onFormChange.bind(this)
+        this.onFormSubmit = this.onFormSubmit.bind(this)
     }
 
     onFormChange(tag: string, value: any) {
@@ -45,7 +52,6 @@ class PageRouter extends Component<RouterProps>{
             let tag_ind = (prevState as RouterState).fields.findIndex((e: any) => {
                 return e['tag'] == tag;
             })
-            console.log(tag_ind)
             if (tag_ind < 0) {
                 return {
                     fields: [...(prevState as RouterState).fields, {tag: tag, value: value}]
@@ -61,6 +67,11 @@ class PageRouter extends Component<RouterProps>{
         return
     }
 
+    onFormSubmit(page_name: string, fields: any) {
+        this.props.onPageSubmit(page_name, fields)
+        this.setState({fields: [{}]})
+    }
+
     getPage(){
         if (this.props.page_name in this.pageDict) {
             return this.pageDict[this.props.page_name](this.onFormChange)
@@ -72,7 +83,7 @@ class PageRouter extends Component<RouterProps>{
         return (
             <TouchableOpacity
                 onPress={() => {
-                        this.props.onPageSubmit(
+                        this.onFormSubmit(
                             this.props.page_name,
                             (this.state as RouterState).fields
                         )
