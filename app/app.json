@@ -18,7 +18,9 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "permissions": ["CAMERA"]
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to observe you(!)"
+      }
     },
     "android": {
       "adaptiveIcon": {

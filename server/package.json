@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "check-types": "^11.1.2",
-    "deepai": "^1.0.17"
+    "deepai": "^1.0.17",
+    "express": "^4.17.1",
+    "multer": "^1.4.4"
   }
 }

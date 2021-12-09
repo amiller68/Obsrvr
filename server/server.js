@@ -7,7 +7,8 @@ app.use(express.json())
 const deepai = require('deepai');
 const Jimp = require("jimp");
 const check = require("check-types");
-
+const multer = require('multer');
+const upload = multer({dest:'collected_data/'});
 
 //The string ID of the thing we want
 const DEEP_AI_API = 'neural-style';
@@ -42,7 +43,8 @@ app.use(express.static(dir));
 const args = process.argv.slice(2);
 const server_port = Number(args[0]);
 
-const BASE_IMAGE_URI = './collected_data/base.jpg'
+const DATA_DIR = './collected_data/'
+const BASE_IMAGE_URI = DATA_DIR + 'base.jpg'
 const def_GEN_IMAGE_URI = './gen.png'
 let GEN_IMAGE_URI = def_GEN_IMAGE_URI
 
@@ -162,18 +164,7 @@ const SOCIAL_MEDIA_PAGE = 'social_media'
 const TEST_PAGE = 'test'
 const ERROR_PAGE = 'error'
 
-const handlePageChange =  (page_name, data_obj) => {
-    // This page is responsible for collecting base images from subjects
-    // This is where we will handle session creation and whatnot
-    if (page_name === INIT_PAGE) {
-        let _base_img_uri = BASE_IMAGE_URI
-        // This will always be false until we implement picture taking
-        if (data_obj.base_img_uri) {
-            _base_img_uri = data_obj.base_img_uri
-        }
-        data_subject = NEW_DATA_SUBJECT(_base_img_uri)
-        return WELCOME_PAGE
-    }
+const handlePageChange =  (page_name) => {
     // Right now, this page collects a data subjects name
     if (page_name === WELCOME_PAGE) {
         return FOOD_PAGE
@@ -215,6 +206,36 @@ app.post('/', (req, res) => {
     console.log("Response: ", response)
     res.json(response);
 });
+
+app.post('/init', upload.single('file'), function(req, res) {
+    if (page_name === INIT_PAGE) {
+        let _base_img_uri = BASE_IMAGE_URI
+        // This will always be false until we implement picture taking
+        if (data_obj.base_img_uri) {
+            _base_img_uri = data_obj.base_img_uri
+        }
+        data_subject = NEW_DATA_SUBJECT(_base_img_uri)
+        return WELCOME_PAGE
+    }
+    let file = __dirname + '/' + req.file.filename;
+
+    let response = {
+        next_page: ERROR_PAGE
+    }
+
+    fs.rename(req.file.path, file, function(err) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            response = {
+                next_page: WELCOME_PAGE
+            }
+            data_subject = NEW_DATA_SUBJECT(file);
+        }
+    });
+    res.json(response);
+})
 
 
 // Listen on all interfaces
