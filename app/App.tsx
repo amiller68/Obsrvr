@@ -44,6 +44,7 @@ class App extends Component<AppProps, AppState> {
                 .then((photo) =>
                     init_server_request(photo))
                 .then((next_page) => {
+                    console.log("Going to:", next_page)
                     let new_state = {
                         'page': next_page,
                         'button_string': 'Ok'

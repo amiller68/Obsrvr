@@ -1,4 +1,4 @@
-const server_address = "https://obsrvr.loca.lt/"
+const server_address = "https://fuzzy-robin-45.loca.lt/"
 
 export const ERROR_PAGE_ID = 'error'
 
@@ -14,6 +14,7 @@ export async function test_request() {
 }
 
 export async function init_server_request(photo: any) {
+    console.log("Sending initial photo")
     // ImagePicker saves the taken photo to disk and returns a local URI to it
     let localUri: string = photo.uri;
     let filename: any = localUri.split('/').pop();
@@ -25,14 +26,17 @@ export async function init_server_request(photo: any) {
     // Upload the image using the fetch and FormData APIs
     let formData = new FormData();
     // Assume "photo" is the name of the form field the server expects
-    //@ts-ignore
-    formData.append('photo', { uri: localUri, name: filename, type });
+    console.log("Appending to form data:")
+    formData.append('file', { localUri, name: filename, type: type } as any);
+    console.log(formData);
     let next_page = ERROR_PAGE_ID
     try {
-        await fetch(server_address + 'init/', {
+        console.log("Uploading to server...");
+        await fetch(server_address, {
             method: 'POST',
             body: formData,
             headers: {
+                Accept: 'application/json',
                 'content-type': 'multipart/form-data',
             },
         }).then(

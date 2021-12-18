@@ -8,6 +8,8 @@ const deepai = require('deepai');
 const Jimp = require("jimp");
 const check = require("check-types");
 const multer = require('multer');
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
 const upload = multer({dest:'collected_data/'});
 
 //The string ID of the thing we want
@@ -99,7 +101,7 @@ const NEW_DATA_SUBJECT = (new_base_img_uri) => {
 }
 
 // This tracks who is being observed
-let data_subject = {}
+let data_subject = NEW_DATA_SUBJECT(BASE_IMAGE_URI)
 
 const getPageData = (data) => {
     //Data is a list of objects of form { tag: 'var_name', value: 'var_value }
@@ -191,51 +193,52 @@ app.get("/", (req, res) => {
     fs.createReadStream(GEN_IMAGE_URI).pipe(res);
 });
 
-app.post('/', (req, res) => {
-    console.log("Got something: ", req.body);
-    let page_name = req.body.page_name
-    let data = req.body.data
-    let data_obj = getPageData(data)
-    //Let's just render on the difference
-    let data_diff = handleDataUpdate(data_obj)
-    handleRender(page_name, data_diff)
+const handleUpload = (req) => {
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+    console.log(req.files)
+    let sampleFile = req.files.file;
+    let uploadPath = __dirname + '/collected_data/' + sampleFile.name;
+    let ret = uploadPath
+    // Use the mv() method to place the file somewhere on your server
+    sampleFile.mv(uploadPath, function(err) {
+        if (err)
+            ret = undefined;
+    });
+    return ret
+}
 
-    let response = {
-        next_page: handlePageChange(page_name, data_obj)
-    }
-    console.log("Response: ", response)
-    res.json(response);
-});
 
-app.post('/init', upload.single('file'), function(req, res) {
-    if (page_name === INIT_PAGE) {
-        let _base_img_uri = BASE_IMAGE_URI
-        // This will always be false until we implement picture taking
-        if (data_obj.base_img_uri) {
-            _base_img_uri = data_obj.base_img_uri
-        }
-        data_subject = NEW_DATA_SUBJECT(_base_img_uri)
-        return WELCOME_PAGE
-    }
-    let file = __dirname + '/' + req.file.filename;
-
+app.post('/', upload.single('file'), (req, res) => {
     let response = {
         next_page: ERROR_PAGE
     }
 
-    fs.rename(req.file.path, file, function(err) {
-        if (err) {
-            console.log(err);
+    if (req.files) {
+        console.log("AHHHHA")
+        let file = handleUpload(req)
+        if (file) {
+            console.log("Good upload!");
+            data_subject = NEW_DATA_SUBJECT(BASE_IMAGE_URI);
+            response.next_page = WELCOME_PAGE
         }
-        else {
-            response = {
-                next_page: WELCOME_PAGE
-            }
-            data_subject = NEW_DATA_SUBJECT(file);
-        }
-    });
+    }
+
+    else {
+        console.log("Got something: ", req.body);
+        let page_name = req.body.page_name
+        let data = req.body.data
+        let data_obj = getPageData(data)
+        //Let's just render on the difference
+        let data_diff = handleDataUpdate(data_obj)
+        handleRender(page_name, data_diff)
+
+        response.next_page = handlePageChange(page_name, data_obj)
+    }
+
+    console.log("Response: ", response)
     res.json(response);
-})
+});
+
 
 
 // Listen on all interfaces
